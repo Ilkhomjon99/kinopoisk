@@ -23,8 +23,27 @@ document.getElementById('movie-search-button').addEventListener('click', async (
         return;
     }
 
+
+    const spinner = document.getElementById('spinner');
+    const movieResults = document.querySelector('.search-results');
+
+    // Показать спиннер перед началом поиска
+    spinner.style.display = 'block';
+    movieResults.innerHTML = '';
+
     const movie = await fetchData(movieTitleValue);
+
+    // Скрыть спиннер после завершения поиска
+    spinner.style.display = 'none';
+
+   
     if (!movie) return;
+
+
+   
+
+
+   
 
     const cardElementTemplate = `
         <div class="card" style="width: 18rem;">
@@ -41,10 +60,10 @@ document.getElementById('movie-search-button').addEventListener('click', async (
                     class="btn btn-primary"
                     data-movie-title="${movie.Title}"
                     data-movie-poster="${movie.Poster !== "N/A" ? movie.Poster : 'placeholder.jpg'}"
-                    data-movie-plot="${movie.Plot.replace(/'/g, "\\'")}"
+                    data-movie-plot="${movie.Plot}"
                     data-movie-year="${movie.Year}"
                     data-movie-genre="${movie.Genre}"
-                    data-movie-actors="${movie.Actors.replace(/'/g, "\\'")}"
+                    data-movie-actors="${movie.Actors}"
                 >
                     Подробнее
                 </button>
@@ -62,6 +81,8 @@ document.getElementById('movie-search-button').addEventListener('click', async (
         const actors = this.getAttribute('data-movie-actors');
         showModal(title, poster, plot, year, genre, actors);
     });
+
+    showToast("success");
 });
 
 
@@ -79,3 +100,35 @@ function showModal(title, poster, plot, year, genre, actors) {
 
 }
 
+
+function showToast(type) {
+    const toastSuccess = new bootstrap.Toast(document.getElementById('toastSuccess'));
+    const toastError = new bootstrap.Toast(document.getElementById('toastError'));
+
+    if (type === "success") {
+        toastSuccess.show();
+    } else if (type === "error") {
+        toastError.show();
+    }
+}
+
+
+
+/*localStorage.setItem('myBirthdate', '11.03.1999')
+
+const phoneNumbers = ['998990008877', '76543332211']
+localStorage.setItem('phoneNumbers', phoneNumbers)
+
+
+const myData = {
+    age: 25,
+    sex: 'male',
+    pets: ['Freya']
+}
+
+localStorage.setItem('myData', JSON.stringify(myData))
+
+let myDAtaJSON = localStorage.getItem ('myData')
+let myDAta = JSON.parse(myDAtaJSON)
+myData.pets[0]*/
+    

@@ -27,7 +27,7 @@
       <div class="container">  
         <a class="navbar-brand" href="#">
           <img
-          src="/assets/images/logo-light.svg"
+          src="./logo-light.svg"
           alt="Logo"
           width="200"
           class="d-inline-block align-text-top"
@@ -54,17 +54,51 @@
             />
           <button type="button" class="btn btn-outline-primary" id="movie-search-button">Найти</button>
         </div>
+
         
         <section>
           <h2 class="my-3">Результаты поиска</h2>
           <div class="search-results  d-flex justify-content-between flex-wrap">
             
-            
-            
-            
-            
           </div>
         </section>
+        
+        <div class="text-center" id="spinner" style="display: none;">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+
+
+
+        <div class="toast" id="toastSuccess" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+           
+            <strong class="me-auto">Успешно</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body">
+            Фильм найден!
+            Хорошего просмотра.
+          </div>
+        </div>
+
+        <div class="toast" id="toastError" role="alert" aria-live="assertive" aria-atomic="true">
+          <div class="toast-header">
+            <strong class="me-auto">Ошибка</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          </div>
+          <div class="toast-body">
+           К сожалению фильм не найден!
+          </div>
+        </div>
+            
+            
+           
+        
+       
+            
+            
 
 
         
