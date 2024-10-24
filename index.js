@@ -23,27 +23,21 @@ document.getElementById('movie-search-button').addEventListener('click', async (
         return;
     }
 
-
     const spinner = document.getElementById('spinner');
     const movieResults = document.querySelector('.search-results');
 
-    // Показать спиннер перед началом поиска
     spinner.style.display = 'block';
     movieResults.innerHTML = '';
 
     const movie = await fetchData(movieTitleValue);
 
-    // Скрыть спиннер после завершения поиска
+    
     spinner.style.display = 'none';
 
-   
     if (!movie) return;
 
-
-   
-
-
-   
+    
+    showToast("success");
 
     const cardElementTemplate = `
         <div class="card" style="width: 18rem;">
@@ -55,7 +49,6 @@ document.getElementById('movie-search-button').addEventListener('click', async (
             <div class="card-body">
                 <h5 class="card-title">${movie.Title}</h5>
                 <p class="card-text">${movie.Plot}</p>
-                
                 <button
                     class="btn btn-primary"
                     data-movie-title="${movie.Title}"
@@ -67,37 +60,85 @@ document.getElementById('movie-search-button').addEventListener('click', async (
                 >
                     Подробнее
                 </button>
+                <button
+                    class="btn btn-${isFavorite(movie.imdbID) ? 'danger' : 'outline-secondary'} mt-2"
+                    data-movie-id="${movie.imdbID}"
+                >
+                    ${isFavorite(movie.imdbID) ? 'Удалить из избранного' : 'Добавить в избранное'}
+                </button>
             </div>
         </div>`;
 
-    document.querySelector('.search-results').innerHTML = cardElementTemplate;
+    movieResults.innerHTML = cardElementTemplate;
 
-    document.querySelector('.btn-primary').addEventListener('click', function () {
-        const title = this.getAttribute('data-movie-title');
-        const poster = this.getAttribute('data-movie-poster');
-        const plot = this.getAttribute('data-movie-plot');
-        const year = this.getAttribute('data-movie-year');
-        const genre = this.getAttribute('data-movie-genre');
-        const actors = this.getAttribute('data-movie-actors');
-        showModal(title, poster, plot, year, genre, actors);
-    });
-
-    showToast("success");
+    
+    addEventListenersToMovieCard(movie);
 });
 
 
-function showModal(title, poster, plot, year, genre, actors) {
-    document.querySelector('#exampleModalLabel').textContent = title;
-    document.querySelector('#modalMoviePoster').src = poster;
-    document.querySelector('#modalMoviePoster').alt = `${title} movie poster`;
-    document.querySelector('#modalMovieYear').textContent = year;
-    document.querySelector('#modalMovieGenre').textContent = genre;
-    document.querySelector('#modalMovieActors').textContent = actors;
-    document.querySelector('#modalMovieDescription').textContent = plot;
+function saveToFavorites(movie) {
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    const isAlreadyFavorite = favorites.some(fav => fav.imdbID === movie.imdbID);
+
+    if (!isAlreadyFavorite) {
+        favorites.push(movie);
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        showToast("success");
+    } else {
+        showToast("error"); 
+    }
+}
+
+
+function removeFromFavorites(movieId) {
+    let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    favorites = favorites.filter(fav => fav.imdbID !== movieId);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    showToast("success");
+}
+
+
+function isFavorite(movieId) {
+    const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+    return favorites.some(fav => fav.imdbID === movieId);
+}
+
+
+function addEventListenersToMovieCard(movie) {
+    const favoriteButton = document.querySelector(`[data-movie-id="${movie.imdbID}"]`);
+
+   
+    const detailButton = document.querySelector('.btn-primary');
+    detailButton.addEventListener('click', () => {
+        showModal(movie);
+    });
+
+    favoriteButton.addEventListener('click', () => {
+        const movieId = movie.imdbID;
+        if (isFavorite(movieId)) {
+            removeFromFavorites(movieId);
+            favoriteButton.classList.replace('btn-danger', 'btn-outline-secondary');
+            favoriteButton.textContent = 'Добавить в избранное';
+        } else {
+            saveToFavorites(movie);
+            favoriteButton.classList.replace('btn-outline-secondary', 'btn-danger');
+            favoriteButton.textContent = 'Удалить из избранного';
+        }
+    });
+}
+
+
+function showModal(movie) {
+    document.querySelector('#exampleModalLabel').textContent = movie.Title;
+    document.querySelector('#modalMoviePoster').src = movie.Poster;
+    document.querySelector('#modalMoviePoster').alt = `${movie.Title} movie poster`;
+    document.querySelector('#modalMovieYear').textContent = movie.Year;
+    document.querySelector('#modalMovieGenre').textContent = movie.Genre;
+    document.querySelector('#modalMovieActors').textContent = movie.Actors;
+    document.querySelector('#modalMovieDescription').textContent = movie.Plot;
 
     const modal = new bootstrap.Modal(document.getElementById('exampleModal'));
     modal.show();
-
 }
 
 
@@ -111,24 +152,3 @@ function showToast(type) {
         toastError.show();
     }
 }
-
-
-
-/*localStorage.setItem('myBirthdate', '11.03.1999')
-
-const phoneNumbers = ['998990008877', '76543332211']
-localStorage.setItem('phoneNumbers', phoneNumbers)
-
-
-const myData = {
-    age: 25,
-    sex: 'male',
-    pets: ['Freya']
-}
-
-localStorage.setItem('myData', JSON.stringify(myData))
-
-let myDAtaJSON = localStorage.getItem ('myData')
-let myDAta = JSON.parse(myDAtaJSON)
-myData.pets[0]*/
-    
